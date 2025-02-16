@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center">Checkout</h2>
+        <form id="checkoutForm" class="mt-4">
+            <div class="mb-3">
+                <label for="name" class="form-label">Full Name</label>
+                <input type="text" class="form-control" id="name" required>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email Address</label>
+                <input type="email" class="form-control" id="email" required>
+            </div>
+            <div class="mb-3">
+                <label for="address" class="form-label">Shipping Address</label>
+                <input type="text" class="form-control" id="address" required>
+            </div>
+            <div class="mb-3">
+                <label for="payment" class="form-label">Payment Method</label>
+                <select class="form-select" id="payment" required>
+                    <option value="credit-card">Credit Card</option>
+                    <option value="paypal">PayPal</option>
+                    <option value="cod">Cash on Delivery</option>
+                </select>
+            </div>
+            
+            <div class="mb-3">
+                <label for="promoCode" class="form-label">Promo Code</label>
+                <input type="text" class="form-control" id="promoCode">
+                <button type="button" class="btn btn-secondary mt-2" onclick="applyPromoCode()">Apply</button>
+                <p id="promoMessage" class="text-danger mt-2" style="display: none;"></p>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label"><strong>Subtotal:</strong> $<span id="subtotal">0.00</span></label>
+                <p><strong>Discount: $<span id="discount">0.00</span></strong></p>
+                <p><strong>Total: $<span id="finalTotal">0.00</span></strong></p>
+            </div>
+            
+            <button type="submit" class="btn btn-primary w-100">Confirm Order</button>
+        </form>
+        <div id="orderProcessing" class="text-center mt-3 text-warning" style="display: none;">Processing your order...</div>
+        <p id="orderMessage" class="text-success text-center mt-3" style="display: none;"></p>
+    </div>
+
+    <script>
+        let subtotal = parseFloat(localStorage.getItem("subtotal")) || 0.00; // Retrieve and parse subtotal
+        let discount = 0;
+        let finalTotal = subtotal;
+    
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("subtotal").textContent = subtotal.toFixed(2);
+            document.getElementById("finalTotal").textContent = finalTotal.toFixed(2);
+        });
+    
+        function applyPromoCode() {
+            let promoCode = document.getElementById("promoCode").value.trim().toLowerCase();
+            let promoMessage = document.getElementById("promoMessage");
+    
+            if (promoCode === "ostad10") {
+                discount = subtotal * 0.10;
+                promoMessage.textContent = "10% discount applied!";
+                promoMessage.style.color = "green";
+            } else if (promoCode === "ostad5") {
+                discount = subtotal * 0.05;
+                promoMessage.textContent = "5% discount applied!";
+                promoMessage.style.color = "green";
+            } else {
+                discount = 0;
+                promoMessage.textContent = "Invalid promo code.";
+                promoMessage.style.color = "red";
+            }
+    
+            promoMessage.style.display = "block";
+            finalTotal = subtotal - discount;
+    
+            document.getElementById("discount").textContent = discount.toFixed(2);
+            document.getElementById("finalTotal").textContent = finalTotal.toFixed(2);
+        }
+    
+        document.getElementById("checkoutForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            document.getElementById("orderProcessing").style.display = "block";
+            setTimeout(() => {
+                document.getElementById("orderProcessing").style.display = "none";
+                document.getElementById("orderMessage").textContent = "Order placed successfully!";
+                document.getElementById("orderMessage").style.display = "block";
+                localStorage.removeItem("cart"); // Clear cart after order
+            }, 2000);
+        });
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
